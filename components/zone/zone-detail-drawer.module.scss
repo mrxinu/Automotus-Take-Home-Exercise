@@ -22,17 +22,44 @@
   gap: $space-sm;
 }
 
+.title {
+  font-size: 18px;
+  line-height: 1.2;
+}
+
 .badge {
   display: flex;
   align-items: center;
   gap: 4px;
   flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.description {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+  font-size: $font-size-xs;
+}
+
+.descIcon {
+  flex-shrink: 0;
+}
+
+.occupancy {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  flex-shrink: 0;
+  color: var(--muted-foreground);
 }
 
 .actionRow {
   display: flex;
   gap: $space-sm;
-  margin-top: $space-sm;
+  margin-top: 12px;
 }
 
 .statusBtn {
@@ -54,12 +81,12 @@
 .vehicles {
   overflow-y: auto;
   max-height: 50vh;
-  padding: $space-sm $space-md $space-lg;
+  padding: 12px $space-md $space-lg;
   overscroll-behavior: contain;
 }
 
 .empty {
-  padding: $space-2xl 0;
+  padding: 48px 0;
   text-align: center;
   font-size: $font-size-sm;
   color: var(--muted-foreground);

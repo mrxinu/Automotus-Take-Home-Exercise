@@ -16,13 +16,18 @@ import { useZoneDetail } from '@/hooks/use-zone-detail'
 import { useArriveAtZone, useDepartZone, useEnforceVehicle } from '@/hooks/use-zone-actions'
 import { useOfficerLocation } from '@/hooks/use-officer-location'
 import type { QueueStop, EnforcementAction } from '@/types'
-import { Navigation, AlertTriangle } from 'lucide-react'
+import { Navigation, MapPin, AlertTriangle, Car } from 'lucide-react'
 import styles from './zone-detail-drawer.module.scss'
 
 interface ZoneDetailDrawerProps {
   selectedZone: QueueStop | null
   open: boolean
   onOpenChange: (open: boolean) => void
+}
+
+const STATUS_LABELS: Record<string, string> = {
+  idle: 'On My Way',
+  on_scene: 'Depart Zone',
 }
 
 export function ZoneDetailDrawer({ selectedZone, open, onOpenChange }: ZoneDetailDrawerProps) {
@@ -66,7 +71,9 @@ export function ZoneDetailDrawer({ selectedZone, open, onOpenChange }: ZoneDetai
         <div className={styles.wrapper}>
           <DrawerHeader className={styles.header}>
             <div className={styles.titleRow}>
-              <DrawerTitle>{selectedZone?.zone_name ?? 'Zone Detail'}</DrawerTitle>
+              <DrawerTitle className={styles.title}>
+                {selectedZone?.zone_name ?? 'Zone Detail'}
+              </DrawerTitle>
               {selectedZone && selectedZone.violation_count > 0 && (
                 <Badge variant="destructive" className={styles.badge}>
                   <AlertTriangle size={10} aria-hidden="true" />
@@ -75,23 +82,27 @@ export function ZoneDetailDrawer({ selectedZone, open, onOpenChange }: ZoneDetai
               )}
             </div>
 
-            <DrawerDescription>
-              {selectedZone?.address} · {selectedZone?.occupancy}/{selectedZone?.max_capacity} vehicles
+            <DrawerDescription className={styles.description}>
+              <MapPin size={11} className={styles.descIcon} aria-hidden="true" />
+              {selectedZone?.address}
+              <span className={styles.occupancy}>
+                <Car size={11} aria-hidden="true" />
+                {selectedZone?.occupancy}/{selectedZone?.max_capacity}
+              </span>
             </DrawerDescription>
 
             {selectedZone && (
               <div className={styles.actionRow}>
                 <Button
-                  variant={selectedZone.status === 'idle' ? 'default' : 'secondary'}
+                  variant="secondary"
                   className={styles.statusBtn}
                   onClick={handleStatusChange}
                   disabled={arrive.isPending || depart.isPending}
                 >
-                  {selectedZone.status === 'idle' ? 'On My Way' : 'Depart Zone'}
+                  {STATUS_LABELS[selectedZone.status] ?? 'On My Way'}
                 </Button>
                 <Button
                   size="icon"
-                  variant="outline"
                   className={styles.navBtn}
                   onClick={handleNavigate}
                   aria-label="Navigate to zone"
@@ -115,7 +126,7 @@ export function ZoneDetailDrawer({ selectedZone, open, onOpenChange }: ZoneDetai
             )}
 
             {data && data.vehicles.length === 0 && (
-              <p className={styles.empty}>No vehicles in this zone right now.</p>
+              <div className={styles.empty}>No vehicles in this zone right now.</div>
             )}
 
             {data?.vehicles.map((vehicle) => (

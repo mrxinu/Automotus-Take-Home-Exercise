@@ -1,100 +1,98 @@
 @use '../../styles/variables' as *;
-@use '../../styles/colors' as *;
 
 .card {
   border: 1px solid var(--border);
-  border-radius: $radius-md;
-  background: var(--card);
+  border-radius: 14px;
   overflow: hidden;
-  margin-bottom: $space-sm;
+  background: var(--card);
+  margin-bottom: $space-md + $space-xs;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.04),
+    0 4px 12px rgba(0, 0, 0, 0.03);
 
   &:last-child {
     margin-bottom: 0;
   }
-
-  &[data-status='violation'] {
-    border-left: 3px solid $status-violation;
-  }
-
-  &[data-status='approaching'] {
-    border-left: 3px solid $status-approaching;
-  }
 }
 
-.top {
-  display: flex;
-  gap: $space-sm;
-  padding: $space-sm;
-}
-
-.photo {
+.image {
   position: relative;
-  width: 88px;
-  height: 64px;
-  border-radius: $radius-sm;
+  margin: $space-sm $space-sm 0;
+  height: 148px;
+  border-radius: 10px;
   overflow: hidden;
   background: var(--muted);
-  flex-shrink: 0;
 
   img {
     object-fit: cover;
   }
 }
 
-.details {
+.overstay {
+  position: absolute;
+  bottom: $space-sm;
+  right: $space-sm;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  background: rgba(255, 255, 255, 0.92);
+  padding: 4px 10px;
+  border-radius: 20px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+
+  &.ok { color: var(--status-clear); }
+  &.approaching { color: var(--status-approaching); }
+  &.violation { color: var(--status-violation); }
+}
+
+.body {
+  padding: $space-sm + $space-xs $space-md;
+  border-bottom: 1px solid var(--border);
+}
+
+.row {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-xs;
 }
 
 .plate {
-  font-family: var(--font-mono, monospace);
   font-size: $font-size-base;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  font-family: monospace;
+  letter-spacing: 0.05em;
   color: var(--foreground);
 }
 
-.desc {
+.detail {
   font-size: $font-size-xs;
   color: var(--muted-foreground);
-}
-
-.meta {
-  font-size: $font-size-xs;
-  color: var(--muted-foreground);
-  text-transform: capitalize;
-}
-
-.timer {
-  font-size: $font-size-xs;
-  font-weight: 600;
-
-  &[data-status='violation'] {
-    color: $status-violation;
-  }
-
-  &[data-status='approaching'] {
-    color: $status-approaching;
-  }
-
-  &[data-status='ok'] {
-    color: $status-clear;
-  }
+  margin-top: 3px;
 }
 
 .actions {
   display: flex;
   gap: $space-xs;
-  padding: 0 $space-sm $space-sm;
+  padding: $space-sm $space-md $space-sm + $space-xs;
 }
 
 .cite,
-.warn,
-.skip {
+.action {
   flex: 1;
   min-height: $tap-target-min;
   font-weight: 600;
+  font-size: $font-size-xs;
+}
+
+.cite {
+  background: var(--foreground);
+  color: var(--background);
+
+  &:hover {
+    background: var(--foreground);
+    opacity: 0.9;
+  }
 }
