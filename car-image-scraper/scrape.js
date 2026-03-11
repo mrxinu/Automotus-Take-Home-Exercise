@@ -1,7 +1,7 @@
 /**
  * Vehicle Image Scraper for ParkPatrol
  *
- * Fetches side-view images of the 25 vehicle types used in mock data.
+ * Fetches side-view images of the 40 vehicle types used in mock data.
  * Images are scraped from Bing Image Search and saved locally so the
  * app can display realistic vehicle photos without an external API.
  *
@@ -45,6 +45,21 @@ const FLEET = [
   { make: 'Dodge',      model: 'Charger',    color: 'Black'  },
   { make: 'Toyota',     model: 'RAV4',       color: 'Silver' },
   { make: 'Subaru',     model: 'Impreza',    color: 'Blue'   },
+  { make: 'Jeep',       model: 'Cherokee',   color: 'White'  },
+  { make: 'GMC',        model: 'Sierra',     color: 'Black'  },
+  { make: 'Ford',       model: 'Escape',     color: 'Silver' },
+  { make: 'Chevrolet',  model: 'Equinox',    color: 'Gray'   },
+  { make: 'Nissan',     model: 'Sentra',     color: 'White'  },
+  { make: 'Kia',        model: 'Optima',     color: 'Blue'   },
+  { make: 'Toyota',     model: 'Highlander', color: 'Black'  },
+  { make: 'Honda',      model: 'Fit',        color: 'Red'    },
+  { make: 'Mazda',      model: 'CX-5',       color: 'White'  },
+  { make: 'Volkswagen', model: 'Passat',     color: 'Silver' },
+  { make: 'Hyundai',    model: 'Tucson',     color: 'Gray'   },
+  { make: 'Ford',       model: 'F-150',      color: 'Red'    },
+  { make: 'Chevrolet',  model: 'Silverado',  color: 'White'  },
+  { make: 'BMW',        model: 'X3',         color: 'Blue'   },
+  { make: 'Audi',       model: 'Q5',         color: 'Gray'   },
 ]
 
 // ── Paths ───────────────────────────────────────────────────────────

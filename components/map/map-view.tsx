@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useCallback, useState } from 'react'
+import { useCallback, useState } from 'react'
 import {
   APIProvider,
   Map as GoogleMap,
@@ -25,7 +25,7 @@ const DEFAULT_CENTER = { lat: 39.9500, lng: -75.1680 }
 const DEFAULT_ZOOM = 16
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? ''
-const GOOGLE_MAPS_MAP_ID = process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID ?? ''
+const MAP_ID = 'parking-enforcement-map'
 
 function ZonePin({ color, count }: { color: string; count: number }) {
   const size = count > 0 ? 30 : 22
@@ -76,7 +76,7 @@ function GoogleMapView({ zones, onMarkerTap, officerLocation }: MapViewProps) {
       <GoogleMap
         defaultCenter={DEFAULT_CENTER}
         defaultZoom={DEFAULT_ZOOM}
-        mapId={GOOGLE_MAPS_MAP_ID}
+        mapId={MAP_ID}
         gestureHandling="greedy"
         disableDefaultUI
         style={{ width: '100%', height: '100%' }}
