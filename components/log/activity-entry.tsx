@@ -1,62 +1,32 @@
 'use client'
 
-import Image from 'next/image'
 import type { ActivityEntry as ActivityEntryType } from '@/types'
+import { formatTime } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { FileWarning, AlertTriangle, SkipForward, CheckCircle, Navigation, MapPin } from 'lucide-react'
 import styles from './activity-entry.module.scss'
 
-const ACTION_META: Record<string, { icon: typeof FileWarning; label: string }> = {
-  cite: { icon: FileWarning, label: 'Citation Issued' },
-  warn: { icon: AlertTriangle, label: 'Warning Issued' },
-  skip: { icon: SkipForward, label: 'Skipped' },
-  clear: { icon: CheckCircle, label: 'Cleared' },
-  arrive: { icon: MapPin, label: 'Arrived at Zone' },
-  depart: { icon: Navigation, label: 'Departed Zone' },
-}
-
-function formatTimestamp(iso: string): string {
-  const d = new Date(iso)
-  return d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })
-}
+const ACTION_CONFIG = {
+  cite: { icon: FileWarning, label: 'Cited', color: 'cite' },
+  warn: { icon: AlertTriangle, label: 'Warned', color: 'warn' },
+  skip: { icon: SkipForward, label: 'Skipped', color: 'skip' },
+  clear: { icon: CheckCircle, label: 'Cleared', color: 'clear' },
+  arrive: { icon: MapPin, label: 'Arrived', color: 'arrive' },
+  depart: { icon: Navigation, label: 'Departed', color: 'depart' },
+} as const
 
 export function ActivityEntryCard({ entry }: { entry: ActivityEntryType }) {
-  const meta = ACTION_META[entry.action] ?? ACTION_META.clear
-  const Icon = meta.icon
-  const hasVehicle = !!entry.license_plate
+  const config = ACTION_CONFIG[entry.action] ?? ACTION_CONFIG.clear
+  const Icon = config.icon
 
   return (
-    <article className={styles.entry}>
-      <div className={styles.leading}>
-        <Icon size={16} aria-hidden="true" />
-      </div>
-
-      <div className={styles.content}>
-        <div className={styles.topRow}>
-          <span className={styles.label}>{meta.label}</span>
-          <time className={styles.time}>{formatTimestamp(entry.timestamp)}</time>
-        </div>
-
-        <span className={styles.zone}>{entry.zone_name}</span>
-
-        {hasVehicle && (
-          <div className={styles.vehicle}>
-            {entry.vehicle_image && (
-              <div className={styles.thumb}>
-                <Image
-                  src={entry.vehicle_image}
-                  alt=""
-                  width={40}
-                  height={28}
-                  unoptimized
-                />
-              </div>
-            )}
-            <span className={styles.plate}>{entry.license_plate}</span>
-          </div>
-        )}
-
-        {entry.note && <p className={styles.note}>{entry.note}</p>}
-      </div>
-    </article>
+    <div className={cn(styles.toast, styles[config.color])}>
+      <Icon size={14} className={cn(styles.icon, styles[config.color])} aria-hidden="true" />
+      <span className={cn(styles.label, styles[config.color])}>
+        {config.label}
+      </span>
+      <span className={styles.zone}>{entry.zone_name}</span>
+      <span className={styles.time}>{formatTime(entry.timestamp)}</span>
+    </div>
   )
 }

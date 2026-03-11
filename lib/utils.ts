@@ -29,6 +29,14 @@ export function formatRelativeTime(isoTimestamp: string): string {
   return `${Math.floor(diffHrs / 24)}d ago`
 }
 
+/** Format an ISO timestamp to a short time string (e.g., "3:45 PM") */
+export function formatTime(isoTimestamp: string): string {
+  return new Intl.DateTimeFormat(undefined, {
+    hour: 'numeric',
+    minute: '2-digit',
+  }).format(new Date(isoTimestamp))
+}
+
 /** Generate a simple UUID-like string */
 export function generateId(): string {
   return Math.random().toString(36).substring(2, 9) + Date.now().toString(36)
