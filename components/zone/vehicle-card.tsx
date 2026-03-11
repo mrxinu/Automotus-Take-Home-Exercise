@@ -23,7 +23,6 @@ const TYPE_COLORS: Record<string, string> = {
 
 export function VehicleCard({ vehicle, onAction }: VehicleCardProps) {
   const [clicked, setClicked] = useState<EnforcementAction | null>(null)
-  if (vehicle.actioned) return null
 
   const overstayLabel =
     vehicle.overstay_status === 'violation'
