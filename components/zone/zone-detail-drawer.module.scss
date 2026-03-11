@@ -1,0 +1,66 @@
+@use '../../styles/variables' as *;
+
+.content {
+  max-height: 85vh;
+  overscroll-behavior: contain;
+}
+
+.wrapper {
+  margin: 0 auto;
+  width: 100%;
+  max-width: 32rem;
+}
+
+.header {
+  padding-bottom: $space-sm;
+}
+
+.titleRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $space-sm;
+}
+
+.badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.actionRow {
+  display: flex;
+  gap: $space-sm;
+  margin-top: $space-sm;
+}
+
+.statusBtn {
+  flex: 1;
+  min-height: $tap-target-min;
+}
+
+.navBtn {
+  min-height: $tap-target-min;
+  min-width: $tap-target-min;
+}
+
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0 $space-md;
+}
+
+.vehicles {
+  overflow-y: auto;
+  max-height: 50vh;
+  padding: $space-sm $space-md $space-lg;
+  overscroll-behavior: contain;
+}
+
+.empty {
+  padding: $space-2xl 0;
+  text-align: center;
+  font-size: $font-size-sm;
+  color: var(--muted-foreground);
+}

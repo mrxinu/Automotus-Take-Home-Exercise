@@ -1,0 +1,27 @@
+@use '../../styles/variables' as *;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px $space-lg;
+  text-align: center;
+}
+
+.icon {
+  color: var(--status-clear);
+  margin-bottom: $space-md;
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: 600;
+  margin-bottom: $space-sm;
+}
+
+.desc {
+  font-size: $font-size-sm;
+  color: var(--brand-gray);
+  max-width: 280px;
+}

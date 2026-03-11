@@ -1,0 +1,34 @@
+@use '../../styles/variables' as *;
+
+.main {
+  max-width: 32rem;
+  margin: 0 auto;
+  padding: $space-md;
+  padding-bottom: 80px;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px $space-lg;
+  text-align: center;
+}
+
+.empty-icon {
+  color: var(--brand-gray);
+  margin-bottom: $space-md;
+}
+
+.empty-title {
+  font-size: $font-size-lg;
+  font-weight: 600;
+  margin-bottom: $space-sm;
+}
+
+.empty-desc {
+  font-size: $font-size-sm;
+  color: var(--brand-gray);
+  max-width: 280px;
+}

@@ -1,0 +1,100 @@
+@use '../../styles/variables' as *;
+@use '../../styles/colors' as *;
+
+.card {
+  border: 1px solid var(--border);
+  border-radius: $radius-md;
+  background: var(--card);
+  overflow: hidden;
+  margin-bottom: $space-sm;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  &[data-status='violation'] {
+    border-left: 3px solid $status-violation;
+  }
+
+  &[data-status='approaching'] {
+    border-left: 3px solid $status-approaching;
+  }
+}
+
+.top {
+  display: flex;
+  gap: $space-sm;
+  padding: $space-sm;
+}
+
+.photo {
+  position: relative;
+  width: 88px;
+  height: 64px;
+  border-radius: $radius-sm;
+  overflow: hidden;
+  background: var(--muted);
+  flex-shrink: 0;
+
+  img {
+    object-fit: cover;
+  }
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.plate {
+  font-family: var(--font-mono, monospace);
+  font-size: $font-size-base;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--foreground);
+}
+
+.desc {
+  font-size: $font-size-xs;
+  color: var(--muted-foreground);
+}
+
+.meta {
+  font-size: $font-size-xs;
+  color: var(--muted-foreground);
+  text-transform: capitalize;
+}
+
+.timer {
+  font-size: $font-size-xs;
+  font-weight: 600;
+
+  &[data-status='violation'] {
+    color: $status-violation;
+  }
+
+  &[data-status='approaching'] {
+    color: $status-approaching;
+  }
+
+  &[data-status='ok'] {
+    color: $status-clear;
+  }
+}
+
+.actions {
+  display: flex;
+  gap: $space-xs;
+  padding: 0 $space-sm $space-sm;
+}
+
+.cite,
+.warn,
+.skip {
+  flex: 1;
+  min-height: $tap-target-min;
+  font-weight: 600;
+}

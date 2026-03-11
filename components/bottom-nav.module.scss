@@ -1,0 +1,59 @@
+@use '../styles/variables' as *;
+
+.nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  border-top: 1px solid var(--border);
+  background: var(--card);
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  height: 64px;
+  max-width: 32rem;
+  margin: 0 auto;
+}
+
+.link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 64px;
+  min-height: $tap-target-min;
+  padding: $space-sm 12px;
+  border-radius: 8px;
+  transition: color 0.15s, background-color 0.15s;
+  text-decoration: none;
+
+  &:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+}
+
+.link-active {
+  color: var(--brand-primary);
+}
+
+.link-inactive {
+  color: var(--brand-gray);
+
+  &:hover {
+    color: var(--foreground);
+  }
+}
+
+.link-label {
+  font-size: $font-size-xs;
+}
+
+.link-label-active {
+  font-weight: 600;
+}

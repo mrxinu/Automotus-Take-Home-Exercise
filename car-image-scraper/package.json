@@ -1,0 +1,11 @@
+{
+  "name": "parkpatrol-image-scraper",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "scrape": "node scrape.js"
+  },
+  "dependencies": {
+    "playwright": "^1.58.0"
+  }
+}

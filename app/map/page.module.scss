@@ -1,0 +1,19 @@
+@use '../../styles/variables' as *;
+
+.main {
+  position: relative;
+  height: calc(100vh - 52px - 64px);
+}
+
+.empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-text {
+  font-size: $font-size-sm;
+  color: var(--muted-foreground);
+}

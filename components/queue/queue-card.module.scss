@@ -1,0 +1,66 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+@use '../../styles/colors' as *;
+
+.card {
+  @include touch-target;
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  padding: $space-sm 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  -webkit-tap-highlight-color: transparent;
+
+  &:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+}
+
+.body {
+  flex: 1;
+  min-width: 0;
+}
+
+.name {
+  display: block;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: var(--foreground);
+  @include truncate;
+}
+
+.address {
+  display: block;
+  font-size: $font-size-xs;
+  color: var(--muted-foreground);
+  @include truncate;
+}
+
+.stats {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  flex-shrink: 0;
+}
+
+.violation {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: $font-size-sm;
+  font-weight: 700;
+  color: $status-violation;
+  font-variant-numeric: tabular-nums;
+}
+
+.occupancy {
+  font-size: $font-size-xs;
+  color: var(--muted-foreground);
+  font-variant-numeric: tabular-nums;
+}
+
