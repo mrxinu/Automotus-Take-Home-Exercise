@@ -87,7 +87,7 @@ export function VehicleCard({ vehicle, onAction, isActioning }: VehicleCardProps
         <Button
           size="sm"
           variant="outline"
-          className={styles.action}
+          className={cn(styles.action, 'text-muted-foreground')}
           onClick={() => onAction(vehicle.id, 'skip')}
           disabled={isActioning}
         >
