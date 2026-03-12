@@ -8,7 +8,6 @@ import {
   DrawerDescription,
 } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { VehicleCard } from './vehicle-card'
 import { ErrorState } from '@/components/error-state'
@@ -75,20 +74,22 @@ export function ZoneDetailDrawer({ selectedZone, open, onOpenChange }: ZoneDetai
                 {selectedZone?.zone_name ?? 'Zone Detail'}
               </DrawerTitle>
               {selectedZone && selectedZone.violation_count > 0 && (
-                <Badge variant="destructive" className={styles.badge}>
-                  <AlertTriangle size={10} aria-hidden="true" />
+                <span className={styles.violationPill}>
+                  <AlertTriangle size={12} aria-hidden="true" />
                   {selectedZone.violation_count}
-                </Badge>
+                </span>
               )}
             </div>
 
             <DrawerDescription className={styles.description}>
               <MapPin size={11} className={styles.descIcon} aria-hidden="true" />
               {selectedZone?.address}
-              <span className={styles.occupancy}>
-                <Car size={11} aria-hidden="true" />
-                {selectedZone?.occupancy}/{selectedZone?.max_capacity}
-              </span>
+              {selectedZone && (
+                <span className={styles.occupancyPill}>
+                  <Car size={12} aria-hidden="true" />
+                  {selectedZone.occupancy}/{selectedZone.max_capacity}
+                </span>
+              )}
             </DrawerDescription>
 
             {selectedZone && (
