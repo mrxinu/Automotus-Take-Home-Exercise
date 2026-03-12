@@ -128,7 +128,7 @@ erDiagram
 |------|--------|
 | `zone_s` | `idle`, `en_route`, `on_scene`, `cleared` |
 | `vehicle_t` | `personal`, `rideshare`, `delivery`, `commercial` |
-| `action_t` | `cite`, `warn`, `skip`, `arrive`, `depart` |
+| `action_t` | `cite`, `warn`, `skip`, `depart` |
 | `officer_s` | `available`, `en_route`, `on_scene`, `off_duty` |
 | `sev_t` | `low`, `medium`, `high` |
 

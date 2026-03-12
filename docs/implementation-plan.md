@@ -79,7 +79,7 @@ hooks/
   use-queue.ts          # useQuery → /api/queue
   use-zone-detail.ts    # useQuery → /api/zones/[id]
   use-activity.ts       # useQuery → /api/activity
-  use-zone-actions.ts   # useMutation → arrive/depart/enforce
+  use-zone-actions.ts   # useMutation → claim (On My Way)/depart/enforce
   use-officer-location.ts
 
 lib/
@@ -183,7 +183,7 @@ All routes: 200–500ms simulated delay.
 
 - Opens from Map or Route when tapping a zone
 - Should present all the information an officer needs to make an enforcement decision at a glance: zone context (name, address, how full it is), and for each vehicle — what it looks like, its plate, how long it's been parked, whether it's in violation, and what type of vehicle it is
-- **Action row**: Officer can mark arrival/departure at the zone, and navigate to it
+- **Action row**: "On My Way" button claims the zone (disables after tap), navigate button opens directions
 - **Vehicle cards**: Each card gives the officer enough context to act — vehicle photo, plate, overstay duration, vehicle type — with clear Cite/Warn/Skip action buttons
 - The drawer should feel like a field tool, not a dashboard — prioritize scannability and quick action over information density
 - Empty state: "No vehicles in this zone right now."
@@ -191,7 +191,7 @@ All routes: 200–500ms simulated delay.
 ### Screen 4: Log (`/log`)
 
 - Reverse-chronological list of activity entries
-- Each entry is a card/row containing all information relevant to an enforcement log: action taken (cite/warn/skip/arrive/depart), zone name, license plate, vehicle description, timestamp, and any officer notes
+- Each entry is a card/row containing all information relevant to an enforcement log: action taken (cite/warn/skip/depart), zone name, license plate, vehicle description, timestamp, and any officer notes
 - Entries should read like a real enforcement log — an officer or supervisor reviewing the log should have full context for each action without needing to cross-reference other screens
 - Empty state: ClipboardList icon + "No activity yet" + description text
 

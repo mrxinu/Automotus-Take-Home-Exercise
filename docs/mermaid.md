@@ -11,7 +11,7 @@ graph LR
     end
 
     subgraph "POST (Write)"
-        AR["POST /api/zones/:id/arrive"] -->|"{ zone, activity }"| R4["arriveAtZone()<br/>status → on_scene"]
+        AR["POST /api/zones/:id/arrive"] -->|"{ zone, activity }"| R4["arriveAtZone()<br/>claims zone, logs depart"]
         DE["POST /api/zones/:id/depart"] -->|"{ zone, activity }"| R5["departZone()<br/>status → idle"]
         EN["POST /api/zones/:id/vehicles/:vid/:action"] -->|"{ zone, vehicle, activity }"| R6["enforceVehicle()<br/>cite / warn / skip"]
         RE["POST /api/reset"] -->|"{ ok }"| R7["resetState()<br/>Reseed all data"]
@@ -157,7 +157,7 @@ The entire store lives on `globalThis.__automotus_go_mock_state__` so it survive
 | `VehicleType` | `personal`, `rideshare`, `delivery`, `commercial` |
 | `OverstayStatus` | `ok`, `approaching`, `violation` |
 | `EnforcementAction` | `cite`, `warn`, `skip` |
-| `ZoneAction` | `arrive`, `depart` |
+| `ZoneAction` | `depart` |
 | `ActionType` | `EnforcementAction \| ZoneAction \| 'clear'` |
 
 ---
@@ -208,7 +208,7 @@ graph LR
         UQ["useQueue()"]
         UZD["useZoneDetail(id)"]
         UA["useActivity()"]
-        UAR["useArriveAtZone()"]
+        UAR["useArriveAtZone()<br/>(On My Way)"]
         UDE["useDepartZone()"]
         UEN["useEnforceVehicle()"]
         UOL["useOfficerLocation()"]

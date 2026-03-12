@@ -49,7 +49,7 @@ Priority-sorted list of 16 Philadelphia zones. Each card shows zone name, violat
 Google Maps centered on the Rittenhouse Square area with color-coded zone markers (red = high priority, yellow = medium, green = clear). Tap a marker to open the same zone detail drawer. Falls back to MapLibre GL with OpenFreeMap tiles when no Google Maps API key is set.
 
 ### Zone Detail Drawer
-Bottom sheet showing zone header, vehicle list with overstay timers, and per-vehicle actions (Cite / Warn / Skip). Zone lifecycle: **On My Way → Depart Zone** (arrive/depart). Navigate button opens turn-by-turn directions.
+Bottom sheet showing zone header, vehicle list with overstay timers, and per-vehicle actions (Cite / Warn / Skip). **On My Way** button claims the zone (disables after tap so no other officer overlaps). Navigate button opens turn-by-turn directions.
 
 ### Activity Log
 Reverse-chronological log of all officer actions taken during the session. Each entry shows action icon, zone name, vehicle plate, and relative timestamp.
@@ -72,7 +72,7 @@ All routes live in `/app/api`. Mock backend with `globalThis` singleton state an
 
 | Method | Path | Response | Description |
 |--------|------|----------|-------------|
-| POST | `/api/zones/[id]/arrive` | `{ zone, activity }` | Officer arrives — status becomes `on_scene` |
+| POST | `/api/zones/[id]/arrive` | `{ zone, activity }` | Officer claims zone (On My Way) — status becomes `on_scene` |
 | POST | `/api/zones/[id]/depart` | `{ zone, activity }` | Officer departs — status becomes `idle` |
 
 ### Vehicle Enforcement Endpoints
@@ -114,7 +114,7 @@ A single dynamic route validates the `[action]` segment. Invalid actions return 
 }
 ```
 
-**POST /api/zones/zone-03/arrive**
+**POST /api/zones/zone-03/arrive** (Officer taps "On My Way")
 ```json
 {
   "zone": {
@@ -124,7 +124,7 @@ A single dynamic route validates the `[action]` segment. Invalid actions return 
   },
   "activity": {
     "id": "act-def456",
-    "action": "arrive",
+    "action": "depart",
     "zone_name": "Chestnut & 18th (W)",
     "timestamp": "2026-03-12T14:35:00.000Z"
   }
@@ -169,8 +169,7 @@ Every screen handles all three states:
 1. **Queue page loads** with 16 zones sorted by enforcement priority
 2. **Tap a high-priority zone** — drawer opens showing vehicles with overstay timers
 3. **Cite a vehicle** — vehicle disappears instantly (optimistic), violation count drops, queue re-sorts
-4. **Tap "On My Way"** — `POST /arrive`, zone status changes to "On Scene"
-5. **Tap "Depart Zone"** — `POST /depart`, zone returns to idle
+4. **Tap "On My Way"** — zone is claimed (button disables), logged as "Departed" in the activity log
 6. **Switch to Activity Log** — all actions from this session appear
 7. **Switch to Map** — colored markers show zone priorities, tap any marker for details
 8. **Add `?error=true`** to the URL — error state with "Try Again" button
@@ -190,7 +189,7 @@ app/
   api/
     queue/route.ts            # GET sorted zones
     zones/[id]/route.ts       # GET zone detail
-    zones/[id]/arrive/route.ts # POST officer arrives
+    zones/[id]/arrive/route.ts # POST officer claims zone (On My Way)
     zones/[id]/depart/route.ts # POST officer departs
     zones/[id]/vehicles/[vid]/[action]/route.ts  # POST cite/warn/skip
     activity/route.ts         # GET activity log
