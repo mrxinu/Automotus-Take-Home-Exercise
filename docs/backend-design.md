@@ -1,7 +1,9 @@
 # Backend Architecture — Production Design
 
-> How we'd build the real backend behind ParkPatrol's parking enforcement companion app.
+> How we'd build the real backend behind Automotus Go's parking enforcement companion app.
 > The current prototype uses in-memory Next.js API routes. This document describes the production system.
+>
+> **Note:** This is a rough sketch — I didn't review it closely. Treat it as directional thinking, not a polished spec.
 
 ---
 

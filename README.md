@@ -1,4 +1,4 @@
-# ParkPatrol — Parking Enforcement Officer Companion App
+# Automotus Go — Parking Enforcement Officer Companion App
 
 A mobile-first prototype that modernizes the parking enforcement officer workflow. Officers can see a priority-sorted queue of zones, view zone details with vehicle overstay timers, take actions (cite, warn, skip), and review their shift activity — all from a single app.
 
@@ -19,7 +19,7 @@ npm run dev
 # http://localhost:3000
 ```
 
-> No API keys required. The Map view uses [MapLibre GL JS](https://maplibre.org/) with free [OpenFreeMap](https://openfreemap.org/) vector tiles.
+> No API keys required. The Map view uses [MapLibre GL JS](https://maplibre.org/) with free [OpenFreeMap](https://openfreemap.org/) vector tiles as a fallback so you don't need a Google Maps API key. The app looks best on Google Maps, which I'll demo with live.
 
 ---
 
@@ -32,7 +32,7 @@ npm run dev
 | **SCSS Modules** | Scoped component styles with nested semantic class names |
 | **shadcn/ui** | Drawer, Button, Card, Skeleton, Badge (only place Tailwind is used) |
 | **TanStack React Query v5** | Fetching, caching, optimistic updates, loading/error states |
-| **MapLibre GL JS** | Open-source map renderer with free OpenFreeMap tiles (no API key) |
+| **Google Maps** (`@vis.gl/react-google-maps`) | Primary map with AdvancedMarker pins; MapLibre GL JS fallback (no API key needed) |
 
 ---
 
@@ -42,7 +42,7 @@ npm run dev
 Priority-sorted list of 16 Philadelphia zones. Each card shows zone name, violation count, occupancy, and status badge. Tap a card to open the zone detail drawer.
 
 ### Map View
-MapLibre GL map centered on the Rittenhouse Square area with color-coded zone markers (red = high priority, yellow = medium, green = clear). Tap a marker to open the same zone detail drawer.
+Google Maps centered on the Rittenhouse Square area with color-coded zone markers (red = high priority, yellow = medium, green = clear). Tap a marker to open the same zone detail drawer. Falls back to MapLibre GL with OpenFreeMap tiles when no Google Maps API key is set.
 
 ### Zone Detail Drawer
 Bottom sheet showing zone header, vehicle list with overstay timers, and per-vehicle actions (Cite / Warn / Skip). Zone lifecycle: **On My Way → Depart Zone** (arrive/depart). Navigate button opens turn-by-turn directions.
