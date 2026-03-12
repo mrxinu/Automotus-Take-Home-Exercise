@@ -1,5 +1,29 @@
 # Automotus Go: End-to-End Architecture & Communication Flow
 
+## API Endpoints
+
+```mermaid
+graph LR
+    subgraph "GET (Read)"
+        Q["GET /api/queue"] -->|"QueueStop[]"| R1["getQueue()<br/>Priority-sorted zones"]
+        Z["GET /api/zones/:id"] -->|"{ zone, vehicles }"| R2["getZone() + getZoneVehicles()<br/>Zone + unactioned vehicles"]
+        A["GET /api/activity"] -->|"ActivityEntry[]"| R3["getActivity()<br/>All actions, newest first"]
+    end
+
+    subgraph "POST (Write)"
+        AR["POST /api/zones/:id/arrive"] -->|"{ zone, activity }"| R4["arriveAtZone()<br/>status → on_scene"]
+        DE["POST /api/zones/:id/depart"] -->|"{ zone, activity }"| R5["departZone()<br/>status → idle"]
+        EN["POST /api/zones/:id/vehicles/:vid/:action"] -->|"{ zone, vehicle, activity }"| R6["enforceVehicle()<br/>cite / warn / skip"]
+        RE["POST /api/reset"] -->|"{ ok }"| R7["resetState()<br/>Reseed all data"]
+    end
+```
+
+Every write endpoint is **atomic**: it mutates state + prepends an `ActivityEntry` to the log in a single call. The client never coordinates multiple requests per action.
+
+All routes simulate 200–800ms network latency. Appending `?error=true` to any route returns a 500.
+
+---
+
 ## High-Level System Overview
 
 ```mermaid
@@ -29,6 +53,45 @@ graph TB
     ROUTES -->|"JSON Response"| API_CLIENT
     API_CLIENT -->|"Promise resolves"| RQ
     RQ -->|"re-render with data"| UI
+```
+
+---
+
+## Mutation Flow (Optimistic Updates)
+
+```mermaid
+sequenceDiagram
+    participant UI as VehicleCard
+    participant Hook as useEnforceVehicle()
+    participant RQ as React Query Cache
+    participant Fetch as api-client.ts
+    participant Route as API Route
+    participant Actions as mock-data/actions.ts
+
+    UI->>Hook: cite(zoneId, vehicleId)
+    Hook->>RQ: onMutate — cancel zone queries, snapshot cache
+    RQ->>RQ: optimistically filter vehicle from zone.vehicles
+    RQ-->>UI: re-render (vehicle gone instantly)
+
+    Hook->>Fetch: POST /zones/:id/vehicles/:vid/cite
+    Fetch->>Route: fetch(...)
+    Route->>Actions: enforceVehicle(zoneId, vid, 'cite')
+    Actions->>Actions: mark vehicle.actioned = 'cite'
+    Actions->>Actions: recount zone stats (vehicle_count, violation_count, approaching_count)
+    Actions->>Actions: computePriorityScore() → update zone.priority_score
+    Actions->>Actions: prepend ActivityEntry to log
+    Actions-->>Route: { zone, vehicle, activity }
+    Route-->>Fetch: 201 Created
+
+    alt Success
+        Fetch-->>Hook: resolved
+        Hook->>RQ: onSettled → invalidate ['queue'], ['zone'], ['activity']
+        RQ->>Fetch: refetch all three
+    else Failure
+        Fetch-->>Hook: rejected
+        Hook->>RQ: onError — restore snapshot
+        RQ-->>UI: re-render (vehicle reappears)
+    end
 ```
 
 ---
@@ -96,122 +159,6 @@ The entire store lives on `globalThis.__automotus_go_mock_state__` so it survive
 | `EnforcementAction` | `cite`, `warn`, `skip` |
 | `ZoneAction` | `arrive`, `depart` |
 | `ActionType` | `EnforcementAction \| ZoneAction \| 'clear'` |
-
----
-
-## API Endpoints
-
-```mermaid
-graph LR
-    subgraph "GET (Read)"
-        Q["GET /api/queue"] -->|"QueueStop[]"| R1["getQueue()<br/>Priority-sorted zones"]
-        Z["GET /api/zones/:id"] -->|"{ zone, vehicles }"| R2["getZone() + getZoneVehicles()<br/>Zone + unactioned vehicles"]
-        A["GET /api/activity"] -->|"ActivityEntry[]"| R3["getActivity()<br/>All actions, newest first"]
-    end
-
-    subgraph "POST (Write)"
-        AR["POST /api/zones/:id/arrive"] -->|"{ zone, activity }"| R4["arriveAtZone()<br/>status → on_scene"]
-        DE["POST /api/zones/:id/depart"] -->|"{ zone, activity }"| R5["departZone()<br/>status → idle"]
-        EN["POST /api/zones/:id/vehicles/:vid/:action"] -->|"{ zone, vehicle, activity }"| R6["enforceVehicle()<br/>cite / warn / skip"]
-        RE["POST /api/reset"] -->|"{ ok }"| R7["resetState()<br/>Reseed all data"]
-    end
-```
-
-Every write endpoint is **atomic**: it mutates state + prepends an `ActivityEntry` to the log in a single call. The client never coordinates multiple requests per action.
-
-All routes simulate 200–800ms network latency. Appending `?error=true` to any route returns a 500.
-
----
-
-## Request/Response Lifecycle
-
-```mermaid
-sequenceDiagram
-    participant Page as React Page
-    participant Hook as useQueue()
-    participant RQ as React Query
-    participant Fetch as api-client.ts
-    participant Route as API Route Handler
-    participant Queries as mock-data/queries.ts
-    participant State as mock-data/state.ts
-
-    Page->>Hook: render
-    Hook->>RQ: useQuery({ queryKey: ['queue'], refetchInterval: 30_000 })
-    RQ->>Fetch: queryFn → fetchQueue()
-    Fetch->>Route: fetch('/api/queue')
-    Route->>Queries: getQueue()
-    Queries->>State: getState().zones
-    State-->>Queries: QueueStop[]
-    Queries-->>Route: sorted by priority_score DESC
-    Route-->>Fetch: Response 200, JSON body
-    Fetch-->>RQ: parsed data
-    RQ-->>Hook: { data, isLoading, error }
-    Hook-->>Page: render with data
-```
-
----
-
-## Mutation Flow (Optimistic Updates)
-
-```mermaid
-sequenceDiagram
-    participant UI as VehicleCard
-    participant Hook as useEnforceVehicle()
-    participant RQ as React Query Cache
-    participant Fetch as api-client.ts
-    participant Route as API Route
-    participant Actions as mock-data/actions.ts
-
-    UI->>Hook: cite(zoneId, vehicleId)
-    Hook->>RQ: onMutate — cancel zone queries, snapshot cache
-    RQ->>RQ: optimistically filter vehicle from zone.vehicles
-    RQ-->>UI: re-render (vehicle gone instantly)
-
-    Hook->>Fetch: POST /zones/:id/vehicles/:vid/cite
-    Fetch->>Route: fetch(...)
-    Route->>Actions: enforceVehicle(zoneId, vid, 'cite')
-    Actions->>Actions: mark vehicle.actioned = 'cite'
-    Actions->>Actions: recount zone stats (vehicle_count, violation_count, approaching_count)
-    Actions->>Actions: computePriorityScore() → update zone.priority_score
-    Actions->>Actions: prepend ActivityEntry to log
-    Actions-->>Route: { zone, vehicle, activity }
-    Route-->>Fetch: 201 Created
-
-    alt Success
-        Fetch-->>Hook: resolved
-        Hook->>RQ: onSettled → invalidate ['queue'], ['zone'], ['activity']
-        RQ->>Fetch: refetch all three
-    else Failure
-        Fetch-->>Hook: rejected
-        Hook->>RQ: onError — restore snapshot
-        RQ-->>UI: re-render (vehicle reappears)
-    end
-```
-
----
-
-## Error Simulation Flow
-
-```mermaid
-sequenceDiagram
-    participant UI as Page Component
-    participant RQ as React Query
-    participant Fetch as api-client.ts
-    participant Route as API Route
-
-    Note over UI: User appends ?error=true to URL
-    UI->>RQ: useQuery('queue')
-    RQ->>Fetch: fetchQueue()
-    Note over Fetch: Appends window.location.search to request
-    Fetch->>Route: fetch('/api/queue?error=true')
-    Route->>Route: if (error param) return 500
-    Route-->>Fetch: 500 { error: "Simulated server error" }
-    Fetch-->>RQ: throw Error
-    RQ->>RQ: retry once (retry: 1)
-    RQ-->>UI: { error, isError: true }
-    UI->>UI: render ErrorState component
-    Note over UI: "Try Again" button → queryClient.refetchQueries()
-```
 
 ---
 
@@ -296,6 +243,59 @@ graph LR
     UAR --> AAR
     UDE --> ADE
     UEN --> AEN
+```
+
+---
+
+## Request/Response Lifecycle
+
+```mermaid
+sequenceDiagram
+    participant Page as React Page
+    participant Hook as useQueue()
+    participant RQ as React Query
+    participant Fetch as api-client.ts
+    participant Route as API Route Handler
+    participant Queries as mock-data/queries.ts
+    participant State as mock-data/state.ts
+
+    Page->>Hook: render
+    Hook->>RQ: useQuery({ queryKey: ['queue'], refetchInterval: 30_000 })
+    RQ->>Fetch: queryFn → fetchQueue()
+    Fetch->>Route: fetch('/api/queue')
+    Route->>Queries: getQueue()
+    Queries->>State: getState().zones
+    State-->>Queries: QueueStop[]
+    Queries-->>Route: sorted by priority_score DESC
+    Route-->>Fetch: Response 200, JSON body
+    Fetch-->>RQ: parsed data
+    RQ-->>Hook: { data, isLoading, error }
+    Hook-->>Page: render with data
+```
+
+---
+
+## Error Simulation Flow
+
+```mermaid
+sequenceDiagram
+    participant UI as Page Component
+    participant RQ as React Query
+    participant Fetch as api-client.ts
+    participant Route as API Route
+
+    Note over UI: User appends ?error=true to URL
+    UI->>RQ: useQuery('queue')
+    RQ->>Fetch: fetchQueue()
+    Note over Fetch: Appends window.location.search to request
+    Fetch->>Route: fetch('/api/queue?error=true')
+    Route->>Route: if (error param) return 500
+    Route-->>Fetch: 500 { error: "Simulated server error" }
+    Fetch-->>RQ: throw Error
+    RQ->>RQ: retry once (retry: 1)
+    RQ-->>UI: { error, isError: true }
+    UI->>UI: render ErrorState component
+    Note over UI: "Try Again" button → queryClient.refetchQueries()
 ```
 
 ---
